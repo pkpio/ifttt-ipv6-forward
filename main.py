@@ -4,49 +4,39 @@
 from bottle import Bottle,request,response,debug
 import requests
 
+# Base server
+BASE_SERVER='https://huttoncourt.duckdns.org'
+
 # Create the Bottle WSGI application.
 app = Bottle()
-debug(True)
-# Note: We don't need to call run() since our application is embedded within
-# the App Engine WSGI application server.
-
 
 # Define an handler for the root URL of our application.
-@app.get('/')
-def ifttt_get():
+@app.get('/<path:path>')
+def reverse_get(path):
     """Redo the query to the host specified in the ipv6 param"""
 
+    url = "{}/{}".format(BASE_SERVER, path)
     params = request.params
-    param_ipv6 = params.get("ipv6")
-    del(params["ipv6"])
-
     headers = {"Content-Type": request.headers.get("Content-Type")}
 
-    r = requests.get(param_ipv6, headers=headers, params=params)
+    r = requests.get(url, headers=headers, params=params)
 
     response.status = int(r.status_code)
     return r.text
 
-@app.post('/')
-def ifttt_post():
+@app.post('/<path:path>')
+def reverse_post(path):
     """Redo the query to the host specified in the ipv6 param"""
-    params = request.params
-    param_ipv6 = params.get("ipv6")
-    del(params["ipv6"])
 
+    url = "{}/{}".format(BASE_SERVER, path)
+    params = request.params
     headers = {"Content-Type": request.headers.get("Content-Type")}
     data = request.body.getvalue()
 
-    r = requests.post(param_ipv6, headers=headers, params=params, data=data)
+    r = requests.post(url, headers=headers, params=params, data=data)
 
     response.status = int(r.status_code)
     return r.text
-
-# Define an handler for 404 errors.
-@app.error(404)
-def error_404(error):
-    """Return a custom 404 error."""
-    return 'Sorry, Nothing at this URL.'
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
