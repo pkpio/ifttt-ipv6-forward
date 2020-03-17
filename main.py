@@ -5,7 +5,7 @@ from bottle import Bottle,request,response,debug
 import requests
 
 # Base server
-BASE_SERVER='https://huttoncourt.duckdns.org'
+BASE_SERVER='https://red-huttoncourt.duckdns.org'
 
 # Create the Bottle WSGI application.
 app = Bottle()
